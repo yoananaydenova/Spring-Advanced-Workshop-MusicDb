@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -38,9 +39,9 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 // Our login page will be served by the controller with mapping /users/login
                 .formLogin().loginPage("/users/login")
                 // The name of the user name input field of OUR login form is username (optional)
-                .usernameParameter("username")
+                .usernameParameter(UsernamePasswordAuthenticationFilter.SPRING_SECURITY_FORM_USERNAME_KEY)
                 // The name of the user password input field of OUR login form is password (optional)
-                .passwordParameter("password")
+                .passwordParameter(UsernamePasswordAuthenticationFilter.SPRING_SECURITY_FORM_PASSWORD_KEY)
                 // On login success redirect here
                 .defaultSuccessUrl("/home")
                 // On login failure redirect here
