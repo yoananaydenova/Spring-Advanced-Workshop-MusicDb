@@ -1,6 +1,7 @@
 package com.yoanan.musicdb.config;
 
 import com.yoanan.musicdb.service.impl.MusicDBUserService;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,7 +27,8 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 // Allow access to static resources to anyone
-                .antMatchers("/js/**", "/css/**", "/img/**").permitAll()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                //.antMatchers("/js/**", "/css/**", "/images/**").permitAll()
                 // Allow access to index, user login and registration to anyone
                 .antMatchers("/", "/users/login", "/users/register" ).permitAll()
                 // Protect all other pages
