@@ -1,5 +1,9 @@
 package com.yoanan.musicdb.web;
 
+import com.yoanan.musicdb.model.binding.UserRegisterBindingModel;
+import com.yoanan.musicdb.model.service.UserRegisterServiceModel;
+import com.yoanan.musicdb.service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +16,14 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/users")
 public class UserController {
 
+    private final ModelMapper modelMapper;
+    private final UserService userService;
+
+    public UserController(ModelMapper modelMapper, UserService userService) {
+        this.modelMapper = modelMapper;
+        this.userService = userService;
+    }
+
     @GetMapping("/login")
     public String login() {
         return "login";
@@ -21,6 +33,19 @@ public class UserController {
     @GetMapping("/register")
     public String register() {
         return "register";
+    }
+
+    @PostMapping("/register")
+    public String registerAndLoginUser(UserRegisterBindingModel userRegisterBindingModel) {
+
+        UserRegisterServiceModel userRegisterServiceModel =
+                modelMapper.map(userRegisterBindingModel, UserRegisterServiceModel.class);
+
+        //TODO Validation
+
+        userService.registerAndLoginUser(userRegisterServiceModel);
+
+        return "redirect:/home";
     }
 
     @PostMapping("/login-error")

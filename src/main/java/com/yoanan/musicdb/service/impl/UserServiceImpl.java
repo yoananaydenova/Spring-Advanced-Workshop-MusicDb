@@ -7,6 +7,11 @@ import com.yoanan.musicdb.model.service.UserRegisterServiceModel;
 import com.yoanan.musicdb.repository.UserRepository;
 import com.yoanan.musicdb.repository.UserRoleRepository;
 import com.yoanan.musicdb.service.UserService;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +23,15 @@ public class UserServiceImpl implements UserService {
     private final UserRoleRepository userRoleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
+    private final MusicDBUserService musicDBUserService;
 
-    public UserServiceImpl(UserRoleRepository userRoleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRoleRepository userRoleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper, MusicDBUserService musicDBUserService) {
         this.userRoleRepository = userRoleRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.modelMapper = modelMapper;
+        this.musicDBUserService = musicDBUserService;
     }
 
     @Override
@@ -35,12 +44,14 @@ public class UserServiceImpl implements UserService {
             userRoleRepository.saveAll(List.of(adminRole, userRole));
 
             UserEntity admin = new UserEntity()
-                    .setName("admin")
+                    .setUsername("admin")
+                    .setFullName("Admin Adminov")
                     .setPassword(passwordEncoder.encode("admin"))
                     .setRoles(List.of(adminRole, userRole));
 
             UserEntity user = new UserEntity()
-                    .setName("user")
+                    .setUsername("user")
+                    .setFullName("User Userov")
                     .setPassword(passwordEncoder.encode("user"))
                     .setRoles(List.of(userRole));
 
@@ -52,7 +63,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void registerAndLoginUser(UserRegisterServiceModel userRegisterServiceModel) {
-        //TODO
-        throw new UnsupportedOperationException("NOT YET!");
+
+        // REGISTER
+
+        UserEntity newUser = modelMapper.map(userRegisterServiceModel, UserEntity.class);
+        newUser.setPassword(passwordEncoder.encode(userRegisterServiceModel.getPassword()));
+
+        UserRoleEntity userRoleEntity = userRoleRepository.findByRole(UserRole.USER)
+                .orElseThrow(() -> new IllegalStateException("USER role not found! Please seed the roles!"));
+
+        newUser.addRole(userRoleEntity);
+
+        newUser = userRepository.save(newUser);
+
+        // LOGIN
+
+        UserDetails principal = musicDBUserService.loadUserByUsername(newUser.getUsername());
+
+        Authentication authentication =
+                new UsernamePasswordAuthenticationToken(
+                        principal,
+                        newUser.getPassword(),
+                        principal.getAuthorities());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
     }
 }

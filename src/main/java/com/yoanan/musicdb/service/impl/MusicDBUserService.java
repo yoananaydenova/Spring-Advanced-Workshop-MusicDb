@@ -25,7 +25,7 @@ public class MusicDBUserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository
-                .findByName(username)
+                .findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with name " + username + " was not found!"));
 
 
@@ -43,7 +43,7 @@ public class MusicDBUserService implements UserDetailsService {
 
 
         UserDetails result = new User(
-                userEntity.getName(),
+                userEntity.getUsername(),
                 userEntity.getPassword(),
                 authorities
                 );
