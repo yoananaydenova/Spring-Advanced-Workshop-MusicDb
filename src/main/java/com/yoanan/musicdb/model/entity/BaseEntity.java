@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.time.Instant;
 
 @MappedSuperclass
-public abstract class BaseEntity {
+public class BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
