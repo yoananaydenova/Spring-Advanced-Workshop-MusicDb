@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @ModelAttribute("userRegisterBindingModel")
-    public UserRegisterBindingModel createBindingModel(){
+    public UserRegisterBindingModel createBindingModel() {
         return new UserRegisterBindingModel();
     }
 
@@ -49,7 +49,7 @@ public class UserController {
                                        BindingResult bindingResult,
                                        RedirectAttributes redirectAttributes) {
 
-        if(bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("userRegisterBindingModel", userRegisterBindingModel);
             redirectAttributes.addFlashAttribute(
                     "org.springframework.validation.BindingResult.userRegisterBindingModel", bindingResult);
@@ -57,12 +57,16 @@ public class UserController {
             return "redirect:/users/register";
         }
 
-        // TODO validate if user name exists
+        if (userService.usernameExists(userRegisterBindingModel.getUsername())) {
+            redirectAttributes.addFlashAttribute("userRegisterBindingModel", userRegisterBindingModel);
+            redirectAttributes.addFlashAttribute("userExistsError", true);
+
+            return "redirect:/users/register";
+        }
 
         UserRegisterServiceModel userRegisterServiceModel =
                 modelMapper.map(userRegisterBindingModel, UserRegisterServiceModel.class);
 
-        //TODO Validation
 
         userService.registerAndLoginUser(userRegisterServiceModel);
 
