@@ -45,7 +45,17 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 // On login success redirect here
                 .defaultSuccessUrl("/home")
                 // On login failure redirect here
-                .failureForwardUrl("/users/login-error"); //todo errors for login
+                .failureForwardUrl("/users/login-error")
+                .and()
+                .logout()
+                // Which endpoint performs logout, e.g. http://localhost:8080/logout (! This should be POST request!)
+                .logoutUrl("/logout")
+                // Where to land after logout
+                .logoutSuccessUrl("/")
+                // Remove the session from the server
+                .invalidateHttpSession(true)
+                // Delete the session cookie
+                .deleteCookies("JSESSIONID"); //bye!!!
     }
 
     @Override

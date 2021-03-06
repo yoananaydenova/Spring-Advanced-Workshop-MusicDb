@@ -3,6 +3,7 @@ package com.yoanan.musicdb.service.impl;
 import com.yoanan.musicdb.model.entity.UserEntity;
 import com.yoanan.musicdb.model.entity.UserRoleEntity;
 import com.yoanan.musicdb.model.entity.enums.UserRole;
+import com.yoanan.musicdb.model.service.UserRegisterServiceModel;
 import com.yoanan.musicdb.repository.UserRepository;
 import com.yoanan.musicdb.repository.UserRoleRepository;
 import com.yoanan.musicdb.service.UserService;
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void seedUsers() {
 
-        if(userRepository.count()==0){
+        if (userRepository.count() == 0) {
             UserRoleEntity adminRole = new UserRoleEntity().setRole(UserRole.ADMIN);
             UserRoleEntity userRole = new UserRoleEntity().setRole(UserRole.USER);
 
@@ -47,6 +48,11 @@ public class UserServiceImpl implements UserService {
         }
 
 
+    }
 
+    @Override
+    public void registerAndLoginUser(UserRegisterServiceModel userRegisterServiceModel) {
+        //TODO
+        throw new UnsupportedOperationException("NOT YET!");
     }
 }
